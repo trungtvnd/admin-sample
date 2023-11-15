@@ -16,3 +16,14 @@ pass: dcim
 - Database: 
 https://dbdesign.dev.unikom.vn/
 user: admin@unikom.vm/123456a@
+
+
+
+https://github.com/topics/postgis?l=java
+
+https://github.com/lomasz/spatial-spring/blob/master/src/main/java/xyz/lomasz/spatialspring/repository/LocationRepository.java
+
+https://stackoverflow.com/questions/31440496/hibernate-spatial-5-geometrytype
+
+http://www.hibernatespatial.org/documentation/02-Tutorial/01-tutorial4/
+
