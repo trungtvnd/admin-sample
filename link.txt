@@ -1,0 +1,18 @@
+DCIM: 
+- Danh sách chức năng: 
+link: https://1drv.ms/x/s!AhSJGFBpYtqAwCSuJ9vBmpxSQqQw?e=Zh7Gc5
+pass: dcim
+sheet: FunctionList
+
+- Tài liệu thiết kế chi tiết:
++ Link figma chính thức: https://www.figma.com/file/Pr6UAy4ccWLjrz0whwW6t5/DCIM-Website?type=design&node-id=1353-505916&mode=design&t=X1HWMf8B4hcOKQ2I-0
+
++ Link figma: mockup: https://www.figma.com/file/JBiRNmcN6SAspJpGhaq2cW/DCIM1?type=design&node-id=0-1&mode=design&t=bo5cQVXKezbEmYuA-0
+
++ tài liệu thiết kế chi tiết: 
+https://1drv.ms/f/s!AhSJGFBpYtqAxHnFetHT5JXIRMD0?e=wF9uJR
+pass: dcim 
+
+- Database: 
+https://dbdesign.dev.unikom.vn/
+user: admin@unikom.vm/123456a@
