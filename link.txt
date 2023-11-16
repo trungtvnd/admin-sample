@@ -27,3 +27,4 @@ https://stackoverflow.com/questions/31440496/hibernate-spatial-5-geometrytype
 
 http://www.hibernatespatial.org/documentation/02-Tutorial/01-tutorial4/
 
+https://github.com/uvsoftgroup/uvsoftgroupgeospatial
