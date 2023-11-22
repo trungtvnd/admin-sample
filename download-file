@@ -1,0 +1,45 @@
+
+    private final MinioClient minioClient;
+
+    public FileDownloadController(MinioClient minioClient) {
+        this.minioClient = minioClient;
+    }
+
+    @GetMapping("/files")
+    public ResponseEntity<FileSystemResource> downloadFiles(@RequestParam List<String> fileNames) throws IOException {
+        // Create a temporary file to store the ZIP content
+        File zipFile = File.createTempFile("files", ".zip");
+
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(zipFile.toPath()))) {
+            for (String fileName : fileNames) {
+                // Add each file to the zip entry
+                zipOutputStream.putNextEntry(new ZipEntry(fileName));
+
+                // Read the content of the file from MinIO server
+                try (InputStream inputStream = minioClient.getObject("your-bucket-name", fileName)) {
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = inputStream.read(buffer)) > 0) {
+                        zipOutputStream.write(buffer, 0, length);
+                    }
+                }
+
+                zipOutputStream.closeEntry();
+            }
+        }
+
+        // Prepare the response
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=files.zip");
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        headers.add(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate");
+        headers.add(HttpHeaders.PRAGMA, "no-cache");
+        headers.add(HttpHeaders.EXPIRES, "0");
+
+        FileSystemResource resource = new FileSystemResource(zipFile);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(zipFile.length())
+                .body(resource);
+    }
