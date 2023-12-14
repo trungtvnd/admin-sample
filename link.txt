@@ -28,3 +28,38 @@ https://stackoverflow.com/questions/31440496/hibernate-spatial-5-geometrytype
 http://www.hibernatespatial.org/documentation/02-Tutorial/01-tutorial4/
 
 https://github.com/uvsoftgroup/uvsoftgroupgeospatial
+
+
+        StringBuilder hql = new StringBuilder();
+        Map<String, Object> params = new HashMap<>();
+
+        hql.append("select p from ").append(clazz.getName()).append(" p ")
+                .append(" join ").append(FollowPageAccounts.class.getName()).append(" f ")
+                .append("on f.pageFbId = p.fbId ")
+                .append(" where 1=1 ")
+                .append("and f.accountId = :accountId ");
+        params.put("accountId", search.getAccountId());
+        if (search.getProvinceId() != null) {
+            hql.append("and p.provinceId = :provinceId ");
+            params.put("provinceId", search.getProvinceId());
+        }
+        if (search.getDistrictId() != null) {
+            hql.append("and p.districtId = :districtId ");
+            params.put("districtId", search.getDistrictId());
+        }
+        if (StringUtils.hasText(search.getPageName())) {
+            hql.append("and p.fbId = :fbId ");
+            params.put("fbId",fbId );
+        }
+        if (StringUtils.hasText(search.getPeriod())) {
+            hql.append("and p.id like :id ");
+            params.put("id", "%" + search.getPeriod());
+        }
+
+        Query query = entityManager.createQuery(hql.toString(), clazz);
+
+        for (String key : params.keySet()) {
+            query.setParameter(key, params.get(key));
+        }
+
+        return query.getResultList();
