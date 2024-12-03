@@ -1,0 +1,78 @@
+@Service
+public class MyEntityService {
+
+    private final MyEntityRepository myEntityRepository;
+    private final RestTemplate restTemplate;
+    private final ExecutorService executorService;
+
+    @Value("${batch.size:1000}")
+    private int batchSize;
+
+    public MyEntityService(MyEntityRepository myEntityRepository) {
+        this.myEntityRepository = myEntityRepository;
+        this.restTemplate = new RestTemplate();
+        this.executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    }
+
+    public void processData() {
+        int page = 0;
+        boolean hasMoreData = true;
+
+        while (hasMoreData) {
+            // Chỉ một luồng chính truy xuất database
+            Pageable pageable = PageRequest.of(page, batchSize);
+            Page<MyEntity> batch = myEntityRepository.findAll(pageable);
+
+            if (!batch.hasContent()) {
+                hasMoreData = false;
+                break;
+            }
+
+            List<MyEntity> entities = batch.getContent();
+
+            // Xử lý batch bằng ExecutorService
+            processBatchAsync(entities);
+
+            // Chuyển sang trang tiếp theo
+            page++;
+        }
+
+        // Tắt executor khi xử lý xong
+        executorService.shutdown();
+    }
+
+    private void processBatchAsync(List<MyEntity> entities) {
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        for (MyEntity entity : entities) {
+            futures.add(CompletableFuture.runAsync(() -> processEntity(entity), executorService));
+        }
+
+        // Đợi tất cả các task trong batch hoàn thành
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+    }
+
+    private void processEntity(MyEntity entity) {
+        String status;
+        try {
+            // Call sang API khác
+            String apiUrl = "https://example.com/api/process";
+            restTemplate.postForObject(apiUrl, entity, Void.class);
+
+            // Thành công
+            status = "S";
+        } catch (Exception e) {
+            // Thất bại
+            status = "I";
+        }
+
+        // Lưu log trạng thái
+        saveStatusLog(entity.getId(), status);
+    }
+
+    private void saveStatusLog(Long entityId, String status) {
+        // Lưu thông tin vào bảng log
+        System.out.println("Saving log for entity ID: " + entityId + ", status: " + status);
+        // Thêm logic lưu vào bảng tracking
+    }
+}
